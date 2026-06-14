@@ -1,346 +1,815 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sweet Crumbs Bakery</title>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
+<meta charset="utf-8">
+<style>
+    @page {
+        size: A4;
+        margin: 20mm 15mm;
+        @bottom-right {
+            content: "Page " counter(page) " of " counter(pages);
+            font-family: 'Calibri', 'Arial', sans-serif;
+            font-size: 9pt;
+            color: #777777;
+        }
+        @bottom-left {
+            content: "CSC 101: Applications of ICT - Master Summary";
+            font-family: 'Calibri', 'Arial', sans-serif;
+            font-size: 9pt;
+            color: #777777;
+        }
     }
-
+    
     body {
-      font-family: 'Poppins', sans-serif;
-      background: #fff7f4;
-      color: #5c4b51;
-      overflow-x: hidden;
+        font-family: 'Calibri', 'Arial', sans-serif;
+        font-size: 10.5pt;
+        line-height: 1.6;
+        color: #222222;
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff;
+    }
+    
+    *, *::before, *::after {
+        box-sizing: border-box;
     }
 
-    /* Cute Background Decorations */
-    body::before {
-      content: "";
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      background-image:
-        radial-gradient(circle at 10% 20%, #ffd6e7 0 40px, transparent 41px),
-        radial-gradient(circle at 80% 30%, #ffe8b6 0 50px, transparent 51px),
-        radial-gradient(circle at 30% 80%, #d7f8ff 0 60px, transparent 61px);
-      opacity: 0.4;
-      z-index: -1;
+    /* Cover Header Styling */
+    .header-banner {
+        background-color: #1B365D;
+        color: #ffffff;
+        padding: 30px;
+        text-align: center;
+        border-radius: 4px;
+        margin-bottom: 30px;
+    }
+    
+    .header-banner h1 {
+        margin: 0;
+        font-size: 22pt;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+    
+    .header-banner p {
+        margin: 8px 0 0 0;
+        font-size: 12pt;
+        color: #E6EEED;
+        font-style: italic;
     }
 
-    header {
-      padding: 25px 8%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
+    h2 {
+        font-size: 14pt;
+        color: #1B365D;
+        border-left: 5px solid #4A777A;
+        padding-left: 10px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        page-break-after: avoid;
     }
 
-    .logo {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 2rem;
-      color: #ff7ea8;
+    h3 {
+        font-size: 12pt;
+        color: #2C4A6F;
+        margin-top: 20px;
+        margin-bottom: 8px;
+        page-break-after: avoid;
     }
 
-    nav a {
-      text-decoration: none;
-      margin-left: 20px;
-      color: #7b5c68;
-      font-weight: 500;
-      transition: 0.3s;
+    p {
+        margin-top: 0;
+        margin-bottom: 12px;
+        text-align: justify;
     }
 
-    nav a:hover {
-      color: #ff7ea8;
+    /* Structural Grid/Table instead of flex */
+    table.content-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 25px;
+        page-break-inside: auto;
     }
 
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
-      padding: 50px 20px;
+    table.content-table tr {
+        page-break-inside: avoid;
     }
 
-    .hero h1 {
-      font-size: 4rem;
-      font-family: 'Fredoka', sans-serif;
-      color: #ff7ea8;
-      margin-bottom: 20px;
+    table.content-table th {
+        background-color: #4A777A;
+        color: white;
+        font-weight: bold;
+        font-size: 11pt;
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #DDDDDD;
     }
 
-    .hero p {
-      max-width: 700px;
-      font-size: 1.2rem;
-      line-height: 1.8;
-      color: #6e5d64;
+    table.content-table td {
+        padding: 10px;
+        border: 1px solid #DDDDDD;
+        vertical-align: top;
+        font-size: 10pt;
     }
 
-    .hero button {
-      margin-top: 30px;
-      padding: 14px 35px;
-      border: none;
-      border-radius: 40px;
-      background: #ffb6c9;
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 8px 20px rgba(255, 182, 201, 0.4);
+    table.content-table tr:nth-child(even) td {
+        background-color: #F8F9F9;
     }
 
-    .hero button:hover {
-      transform: translateY(-4px);
-      background: #ff7ea8;
+    .lang-title {
+        font-weight: bold;
+        color: #1B365D;
+        margin-bottom: 4px;
+        font-size: 10pt;
     }
 
-    .section-title {
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 50px;
-      color: #ff7ea8;
-      font-family: 'Fredoka', sans-serif;
+    .roman-urdu {
+        font-style: normal;
+        color: #444444;
+        background-color: #F4F7F6;
+        padding: 6px 10px;
+        border-left: 3px solid #4A777A;
+        margin-top: 5px;
+        border-radius: 2px;
     }
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 30px;
-      padding: 0 8% 80px;
+    .keyword-badge {
+        display: inline-block;
+        background-color: #E6EEED;
+        color: #1B365D;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 9pt;
+        font-weight: bold;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        border: 1px solid #C2D4D1;
     }
 
-    .card {
-      background: rgba(255,255,255,0.7);
-      border-radius: 30px;
-      padding: 25px;
-      text-align: center;
-      backdrop-filter: blur(10px);
-      transition: 0.4s;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    .scenario-box {
+        background-color: #F4F7F6;
+        border: 1px solid #C2D4D1;
+        border-top: 4px solid #1B365D;
+        padding: 15px;
+        margin-bottom: 25px;
+        border-radius: 4px;
+        page-break-inside: avoid;
     }
 
-    .card:hover {
-      transform: translateY(-10px) rotate(-1deg);
+    .scenario-box h4 {
+        margin: 0 0 10px 0;
+        color: #1B365D;
+        font-size: 11pt;
+        font-weight: bold;
     }
 
-    .card img {
-      width: 100%;
-      height: 240px;
-      object-fit: cover;
-      border-radius: 20px;
-      margin-bottom: 20px;
+    .math {
+        font-family: 'Times New Roman', serif;
+        font-style: italic;
+        font-weight: bold;
+        color: #1B365D;
     }
-
-    .card h3 {
-      margin-bottom: 10px;
-      color: #ff7ea8;
-      font-family: 'Fredoka', sans-serif;
-    }
-
-    .gallery {
-      padding: 80px 8%;
-    }
-
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .gallery-grid img {
-      width: 100%;
-      border-radius: 25px;
-      transition: 0.4s;
-    }
-
-    .gallery-grid img:hover {
-      transform: scale(1.04) rotate(1deg);
-    }
-
-    .about {
-      padding: 100px 10%;
-      text-align: center;
-    }
-
-    .about p {
-      max-width: 850px;
-      margin: auto;
-      line-height: 2;
-      font-size: 1.1rem;
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      background: #ffdce7;
-      margin-top: 50px;
-      border-top-left-radius: 40px;
-      border-top-right-radius: 40px;
-    }
-
-    footer p {
-      color: #7b5c68;
-    }
-
-    /* Floating Cute Elements */
-    .floating {
-      position: absolute;
-      font-size: 2rem;
-      animation: float 6s infinite ease-in-out;
-      opacity: 0.8;
-    }
-
-    .cookie {
-      top: 20%;
-      left: 10%;
-    }
-
-    .cake {
-      top: 60%;
-      right: 8%;
-    }
-
-    .heart {
-      bottom: 10%;
-      left: 15%;
-    }
-
-    @keyframes float {
-      0% {
-        transform: translateY(0px);
-      }
-      50% {
-        transform: translateY(-20px);
-      }
-      100% {
-        transform: translateY(0px);
-      }
-    }
-
-    @media(max-width:768px) {
-      .hero h1 {
-        font-size: 2.8rem;
-      }
-
-      nav {
-        display: none;
-      }
-    }
-  </style>
+</style>
 </head>
-
 <body>
 
-  <!-- Floating Cute Emojis -->
-  <div class="floating cookie">🍪</div>
-  <div class="floating cake">🧁</div>
-  <div class="floating heart">🎀</div>
-
-  <!-- Navbar -->
-  <header>
-    <div class="logo">Sweet Crumbs ✨</div>
-
-    <nav>
-      <a href="#">Home</a>
-      <a href="#menu">Menu</a>
-      <a href="#gallery">Gallery</a>
-      <a href="#about">About</a>
-    </nav>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="hero">
-    <h1>Cute Tiny Bakery World 🌸</h1>
-
-    <p>
-      Welcome to Sweet Crumbs — a dreamy pastel bakery inspired by
-      miniature desserts, kawaii aesthetics, doodles, art journals,
-      and cozy cartoon vibes.
-    </p>
-
-    <button>Explore Desserts 🍓</button>
-  </section>
-
-  <!-- Menu Section -->
-  <section id="menu">
-    <h2 class="section-title">Our Sweet Menu 🍰</h2>
-
-    <div class="cards">
-
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?q=80&w=1200&auto=format&fit=crop" alt="Cupcake">
-        <h3>Mini Cupcakes</h3>
-        <p>Soft pastel cupcakes with rainbow frosting and sprinkles.</p>
-      </div>
-
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?q=80&w=1200&auto=format&fit=crop" alt="Cake">
-        <h3>Strawberry Cake</h3>
-        <p>Fluffy whipped cream cake decorated with cute strawberries.</p>
-      </div>
-
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?q=80&w=1200&auto=format&fit=crop" alt="Cookies">
-        <h3>Magic Cookies</h3>
-        <p>Crunchy buttery cookies with dreamy colorful icing.</p>
-      </div>
-
+    <div class="header-banner">
+        <h1>CSC 101: Applications of Information & Communication Technologies</h1>
+        <p>Comprehensive English & Roman Urdu Course Book Summary with Exam Practice Scenarios</p>
     </div>
-  </section>
 
-  <!-- Gallery -->
-  <section class="gallery" id="gallery">
+    <p>This master summary guide covers the official core curriculum of <strong>CSC 101</strong> based on <em>Understanding Computers: Today and Tomorrow (15th Edition)</em>. It contains highly detailed academic summaries written side-by-side in flawless professional English and descriptive Roman Urdu, core structural definitions, key technical terms, real-world illustrations, and actual exam-level scenario-based diagnostic questions.</p>
 
-    <h2 class="section-title">Pastel Gallery 🎨</h2>
+    <!-- CHAPTER 1 -->
+    <h2>Chapter 1: Introduction to Computers and Society</h2>
+    <p>Introduces the operational lifecycle of digital computer architecture, hardware classification, basic networks, and modern ethical issues regarding society.</p>
+    
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Core Term & Keywords</th>
+                <th style="width: 75%;">Comprehensive Explanations & Summaries</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>IPOS Cycle</strong><br><br>
+                    <span class="keyword-badge">Input</span>
+                    <span class="keyword-badge">Processing</span>
+                    <span class="keyword-badge">Output</span>
+                    <span class="keyword-badge">Storage</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    The core operational workflow of any computer. <strong>Input:</strong> entering raw data. <strong>Processing:</strong> performing arithmetic or logical operations on data. <strong>Output:</strong> presenting the processed information visually or audibly. <strong>Storage:</strong> saving digital data for future retrieval. <br><em>Example:</em> An ATM scans your debit card insert (Input), processes your account PIN and balances verification (Processing), dispenses currency notes (Output), and records the new remaining ledger amount permanently to the central bank drive (Storage).
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Computer ka sab se bunyadi kaam IPOS cycle kehlata hai. <strong>Input:</strong> computer mein raw data dakhil karna. <strong>Processing:</strong> data par kaam ya calculations karna. <strong>Output:</strong> processed maloomat screen par dikhana ya print karna. <strong>Storage:</strong> data ko future ke liye permanent mehfooz karna. <br><em>Misaal:</em> ATM machine mein card daalna (Input), machine ka password verify karna (Processing), paise nikalna (Output), aur bacha hua balance memory mein save karna (Storage) hai.
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Computer Classification</strong><br><br>
+                    <span class="keyword-badge">Embedded</span>
+                    <span class="keyword-badge">PC</span>
+                    <span class="keyword-badge">Server</span>
+                    <span class="keyword-badge">Mainframe</span>
+                    <span class="keyword-badge">Supercomputer</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Computers are classified based on physical size, processing speed, architecture, and overall capacity:
+                    <ul>
+                        <li><strong>Embedded:</strong> Built into specific consumer devices like smart micro-ovens or vehicular engines to perform dedicated control functions.</li>
+                        <li><strong>Personal Computers (PCs):</strong> Standard laptops or desktops optimized for individual daily productivity.</li>
+                        <li><strong>Servers:</strong> Central heavy-duty computers designed to host files, websites, and deliver data requests to client machines across networks.</li>
+                        <li><strong>Mainframes:</strong> High-capacity secure systems used by elite large enterprises like commercial banks or insurance firms to safely handle millions of simultaneous batch transactions.</li>
+                        <li><strong>Supercomputers:</strong> The absolute fastest, most expensive tier used strictly for extreme processing tasks such as national weapon simulations or real-time global weather forecasting.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Computers ko unke size, speed aur kaam ke mutabiq divide kiya jata hai:
+                        <ul>
+                            <li><strong>Embedded:</strong> Chote chips jo appliances (jaise microwave ya gariyo) mein control ke liye lagaye jaate hain.</li>
+                            <li><strong>PCs / Laptops:</strong> Aam users ke rozmarra ke kaamo ke liye.</li>
+                            <li><strong>Servers:</strong> Central computers jo networks par client computers ko files aur web pages distribute karte hain.</li>
+                            <li><strong>Mainframes:</strong> Boht baray aur secure computers jo baray banks ya sarkari idaray lakhon transactions aik sath chalanay ke liye use karte hain.</li>
+                            <li><strong>Supercomputers:</strong> Dunya ke sab se tez aur mehangay computers jo complex scientific research aur weather forecasting ke liye hote hain.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Societal Risks & Cybercrime</strong><br><br>
+                    <span class="keyword-badge">Malware</span>
+                    <span class="keyword-badge">Phishing</span>
+                    <span class="keyword-badge">Identity Theft</span>
+                    <span class="keyword-badge">Netiquette</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Widespread computer integration introduces severe challenges: health disorders (repetitive strain injury, mental fatigue), data privacy leaks, and organized cybercrime. <strong>Malware</strong> includes malicious scripts (viruses/worms) that infect files. <strong>Phishing</strong> represents fake email links designed to trick users into typing credit card details. <strong>Identity Theft</strong> is stealing someone's SSN or identity online. Digital citizens must practice strict <strong>Netiquette</strong>—behaving politely and ethically in virtual communication channels.
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Computer ke aam istemaal se society ko khatraat bhi hain: health issues (stress, eyesight weakening), privacy ka khauf, aur cybercrime. <strong>Malware</strong> kharab computer programs (jaise virus) hain jo data uratay hain. <strong>Phishing</strong> ka matlab hai nakli emails ke zariye logon ko dhoka de kar unke bank passwords chorna. <strong>Identity Theft</strong> mein kisi doosray ki online pehchan chori ki jati hai. Users ko online communication mein tamiz aur <strong>Netiquette</strong> (internet ke akhlaqiat) ka khayal rakhna chahiye.
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-    <div class="gallery-grid">
+    <!-- CHAPTER 2 -->
+    <h2>Chapter 2: The System Unit - Processing and Memory</h2>
+    <p>Examines how electronic systems map and compute operations internally using binary states, registers, specialized buses, and processing pipelines.</p>
 
-      <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200&auto=format&fit=crop">
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Core Term & Keywords</th>
+                <th style="width: 75%;">Comprehensive Explanations & Summaries</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>Data Representation</strong><br><br>
+                    <span class="keyword-badge">Binary</span>
+                    <span class="keyword-badge">ASCII</span>
+                    <span class="keyword-badge">Unicode</span>
+                    <span class="keyword-badge">Bits vs. Bytes</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Computers rely entirely on electrical voltage states (ON represented as 1, OFF represented as 0). The basic elementary structure of computational data is a single <span class="math">bit</span>. Grouping 8 bits yields <span class="math">1 Byte</span> (sufficient to map a single alphanumeric text character). Text characters are translated to numbers via standard frameworks: <strong>ASCII</strong> utilizes a limited 8-bit scheme representing western alphabets, whereas <strong>Unicode</strong> is a comprehensive universal standard mapping millions of distinct multi-byte symbols for every international language.
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Computer sirf current ke ON (1) aur OFF (0) signals ko samajhta hai jise digital binary data kehte hain. Sab se chota single unit <span class="math">bit</span> hota hai. 8 bits mil kar <span class="math">1 Byte</span> banta hai, jo aik character ko save karta hai. Characters ko numbers mein badalne ke coding standards hain: <strong>ASCII</strong> aik purana 8-bit ka system hai jo sirf English characters ko map karta hai, jabke <strong>Unicode</strong> aik universal standard hai jo dunya ki har zabaan (Urdu, Chinese) ke har lafz ko binary code deta hai.
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>CPU Internal Architecture</strong><br><br>
+                    <span class="keyword-badge">Control Unit</span>
+                    <span class="keyword-badge">ALU</span>
+                    <span class="keyword-badge">Registers</span>
+                    <span class="keyword-badge">System Clock</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    The <strong>Central Processing Unit (CPU)</strong> executes software instructions. It splits operational responsibility across:
+                    <ul>
+                        <li><strong>Control Unit (CU):</strong> The traffic director. It fetches instructions sequentially from RAM, decodes them, and coordinates structural signals across other system components.</li>
+                        <li><strong>Arithmetic Logic Unit (ALU):</strong> The functional computation core that executes mathematical functions (+, -, ×) and logical boolean value operations (&lt;, &gt;, =).</li>
+                        <li><strong>Registers:</strong> Microscopic, hyper-fast local hardware memory storage pockets residing directly inside the CPU core to instantly feed active data pieces into the waiting ALU.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> <strong>CPU</strong> computer ka dimaag hai jo saari instructions poori karta hai. Iske main parts yeh hain:
+                        <ul>
+                            <li><strong>Control Unit (CU):</strong> Yeh pure computer ka manager hai. Yeh RAM se instructions lata hai, unhe decode karta hai, aur baqi components ko kaam par lagata hai.</li>
+                            <li><strong>Arithmetic Logic Unit (ALU):</strong> Yeh math calculations (jama, manfi) aur logical decisions (barabar hai ya chota hai) hal karta hai.</li>
+                            <li><strong>Registers:</strong> Yeh CPU ke andar boht hi tez aur choti temporary storage locations hoti hain jahan ALU apna chalne wala immediate data rakhta hai.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Memory Hierarchy & Volatility</strong><br><br>
+                    <span class="keyword-badge">RAM</span>
+                    <span class="keyword-badge">ROM</span>
+                    <span class="keyword-badge">Cache Memory</span>
+                    <span class="keyword-badge">Volatile</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    System execution speeds vary exponentially across different memory types based on closeness to the CPU:
+                    <ul>
+                        <li><strong>RAM (Random Access Memory):</strong> <em>Volatile</em> memory. It temporarily caches currently running application assets. When electricity is disconnected, all data drops immediately.</li>
+                        <li><strong>ROM (Read-Only Memory):</strong> <em>Non-volatile</em> chip containing permanent manufacturer code such as the startup BIOS initialization sequence.</li>
+                        <li><strong>Cache Memory:</strong> Tiny, high-speed memory slots built onto or right beside the CPU chip (L1, L2, L3). It copies critical instructions from slower system RAM to decrease CPU wait time.</li>
+                    </ul>
+                    <div class="lang-title">[Future Trends]</div>
+                    To bypass physical size limits, manufacturers use <strong>3D Chips</strong> (layering circuits vertically), <strong>Optical Computing</strong> (using light instead of electricity), and <strong>Quantum Computing</strong> (using qubits).
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Memory ke speed aur kamon ke mutabiq mukhtalif types hain:
+                        <ul>
+                            <li><strong>RAM:</strong> Yeh <em>Volatile</em> (arzi) hoti hai. Isme active chalte hue software ka data hota hai. Computer band hote hi iska sara data urr jata hai.</li>
+                            <li><strong>ROM:</strong> Yeh <em>Non-volatile</em> (permanent) hoti hai. Isme computer start karne ke permanent codes (BIOS) hote hain jo kabhi mitley nahi.</li>
+                            <li><strong>Cache Memory:</strong> CPU ke bilkul kareeb aik boht hi tez small memory hoti hai jo RAM se bar bar use hone wala data nikal kar CPU ko jaldi faraham karti hai taake speed barhay.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-      <img src="https://images.unsplash.com/photo-1559620192-032c4bc4674e?q=80&w=1200&auto=format&fit=crop">
+    <!-- CHAPTER 3 -->
+    <h2>Chapter 3: Storage Systems</h2>
+    <p>Analyzes mechanical, solid-state, optical, and redundant array architectures engineered to preserve structural file history permanently.</p>
 
-      <img src="https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?q=80&w=1200&auto=format&fit=crop">
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Core Term & Keywords</th>
+                <th style="width: 75%;">Comprehensive Explanations & Summaries</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>Medium vs. Device</strong><br><br>
+                    <span class="keyword-badge">Medium</span>
+                    <span class="keyword-badge">Storage Device</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    It is crucial to differentiate hardware mechanisms: A <strong>Storage Medium</strong> represents the actual physical material where bits are digitally imprinted (e.g., a round plastic DVD disc, magnetic tape, or a flash memory chip). A <strong>Storage Device</strong> is the electronic reading/writing hardware mechanism into which the medium is inserted or configured (e.g., a spinning DVD drive tray, a memory card reader port).
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> In do cheezon mein farq samajhna zaroori hai: <strong>Storage Medium</strong> us physical cheez ko kehte hain jiske andar actual data save hota hai (jaise plastic DVD disc, magnetic tape, ya flash chip). Jabke <strong>Storage Device</strong> us hardware machine ko kehte hain jo is medium ko chala kar data read ya write karti hai (jaise DVD drive slot ya Card Reader).
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Magnetic HDDs vs. Solid-State SSDs</strong><br><br>
+                    <span class="keyword-badge">Magnetic Platters</span>
+                    <span class="keyword-badge">Flash Chips</span>
+                    <span class="keyword-badge">Read/Write Head</span>
+                    <span class="keyword-badge">SSD Speed</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Traditional <strong>Hard Disk Drives (HDDs)</strong> utilize a series of rapidly spinning circular magnetic metal platters paired with a mechanical read/write arm head. They suffer from high physical latency and shock vulnerability. Modern <strong>Solid-State Drives (SSDs)</strong> completely eliminate moving parts, relying instead on integrated circuits of non-volatile flash memory cells. SSDs feature drastically faster read speeds, near-zero seek times, completely silent operations, and superior physical drop resistance.
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Purani <strong>Magnetic Hard Drives (HDDs)</strong> ke andar ghoomne waali gol dhat ki platters hoti hain aur aik mechanical sui (read/write head) hoti hai jo data read karti hai, yeh slow hoti hain aur hilne se kharab ho sakti hain. Nayi <strong>Solid-State Drives (SSDs)</strong> ke andar koi ghoomne wala part nahi hota balkay yeh pure electronic flash memory chips par chalti hain. SSDs boht zyada tez hoti hain, khamosh chalti hain, aur unke girne se data zaya hone ka dar nahi hota.
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Optical Discs & Alternatives</strong><br><br>
+                    <span class="keyword-badge">Laser Burning</span>
+                    <span class="keyword-badge">Cloud Storage</span>
+                    <span class="keyword-badge">RAID</span>
+                    <span class="keyword-badge">Magnetic Tape</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    <strong>Optical Discs</strong> write data using high-precision laser beams to burn minute microscopic pits onto a surface. Capacity ranges from CDs (700MB) to DVDs (4.7GB) and Blu-ray Discs (25GB+). Terms include <em>-ROM</em> (Read-Only), <em>-R</em> (Recordable once), and <em>-RW</em> (Rewritable/Erasable). Other storage options include:
+                    <ul>
+                        <li><strong>Cloud Storage:</strong> Offloading files to remote datacenter servers managed over the web (e.g., Google Drive).</li>
+                        <li><strong>RAID (Redundant Array of Independent Disks):</strong> Linking multiple local hard drives for performance optimization (striping) or safety protection (mirroring).</li>
+                        <li><strong>Magnetic Tape:</strong> Cheap sequential storage used strictly for massive corporate system backups.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> <strong>Optical Discs</strong> laser beams ke zariye data read aur write karti hain jise disc <strong>burn</strong> karna kehte hain. Iski types mein CD (700MB), DVD (4.7GB), aur Blu-ray (25GB) shamil hain. Inme <em>-ROM</em> (sirf parhnay ke liye), <em>-R</em> (aik dafa record karne ke liye), aur <em>-RW</em> (baar baar mita kar naya data likhne ke liye) variant hote hain. Mazeed platforms:
+                        <ul>
+                            <li><strong>Cloud Storage:</strong> Internet ke zariye door kisi server par data save karna jaise Google Drive.</li>
+                            <li><strong>RAID:</strong> Boht si hard drives ko aapas mein jor kar chalana taake aik kharab hone par bhi data safe rahe (mirroring).</li>
+                            <li><strong>Magnetic Tape:</strong> Sasta sequential backup system jo baray idaray data archive karne ke liye use karte hain.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-      <img src="https://images.unsplash.com/photo-1517686469429-8bdb88b9f907?q=80&w=1200&auto=format&fit=crop">
+    <!-- CHAPTER 4 -->
+    <h2>Chapter 4: Input and Output Devices</h2>
+    <p>Examines hardware components responsible for translating analog human behavior into digital structures, and vice-versa.</p>
 
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Core Term & Keywords</th>
+                <th style="width: 75%;">Comprehensive Explanations & Summaries</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>Scanners & Direct Data Data Entry</strong><br><br>
+                    <span class="keyword-badge">Optical Scanners</span>
+                    <span class="keyword-badge">Barcode Reader</span>
+                    <span class="keyword-badge">RFID / NFC</span>
+                    <span class="keyword-badge">Biometrics</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Direct entry systems bypass slower manual keyboard typing to capture real-world data instantly:
+                    <ul>
+                        <li><strong>Optical Scanners:</strong> Translate printed paper documents into editable high-resolution digital image matrices.</li>
+                        <li><strong>Barcode Readers:</strong> Laser devices that read reflected light from lines to instantly decode product stock keys.</li>
+                        <li><strong>RFID & NFC Readers:</strong> Scan wireless signals from passive radio tags over thin distances without requiring any visual line-of-sight alignment (e.g., scanning automated highway toll tags or contactless smartphone bank payment taps).</li>
+                        <li><strong>Biometrics:</strong> Reading physical human traits (fingerprints, iris scanning) for high-security user authentication.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Direct data entry devices keyboard se typing ke baghair direct baher ki dunya se maloomat capture karti hain:
+                        <ul>
+                            <li><strong>Optical Scanners:</strong> Kaghaz ki tasveer ya report ko high-quality digital photo mein badalte hain.</li>
+                            <li><strong>Barcode Readers:</strong> Superstores par laser light ke zariye product ke lines ko parh kar unki qeemat aur code system mein daalte hain.</li>
+                            <li><strong>RFID aur NFC Readers:</strong> Bina samnay dekhay radio waves ke zariye card ya smart tags ko door se hi scan kar letay hain (jaise metro station toll gates ya tap-and-pay credit cards).</li>
+                            <li><strong>Biometrics:</strong> Insaan ke fingerprints ya aankhon (iris) ko scan kar ke secure identity check karna.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Display Screen Technologies</strong><br><br>
+                    <span class="keyword-badge">CRT Footprint</span>
+                    <span class="keyword-badge">LCD Flat-Panel</span>
+                    <span class="keyword-badge">OLED Pixels</span>
+                    <span class="keyword-badge">Resolution</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Visual representation monitors have evolved drastically across generations:
+                    <ul>
+                        <li><strong>CRT (Cathode Ray Tube):</strong> Historic, heavy monitors that utilize vacuum guns. They have a massive desktop <em>footprint</em>, meaning they occupy vast physical space on a workstation.</li>
+                        <li><strong>LCD (Liquid Crystal Display):</strong> Compact flat-panel technology utilizing a structural layer of liquid crystals filtered by an even CCFL or LED backlight matrix.</li>
+                        <li><strong>OLED (Organic Light-Emitting Diode):</strong> Elite modern screen engineering where every individual pixel creates its own independent light emissions. It requires no bulky backlighting panel, enabling ultra-thin screen dimensions, deep black ratios, and energy efficiency.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Screens aur monitors ki technology waqt ke sath badli hai:
+                        <ul>
+                            <li><strong>CRT Monitors:</strong> Purane zamane ke baray bhari dabbay wale monitors jinka <em>footprint</em> (meiz par gheri gayi jagah) boht bara hota tha.</li>
+                            <li><strong>LCD Screens:</strong> Flat panel screens jo liquid crystals aur peeche aik common liquid/LED backlight panel use karti hain.</li>
+                            <li><strong>OLED Screens:</strong> Sab se latest technology jahan screen ka har single dot (pixel) apni roshni khud peda karta hai. Isme alag se peeche light ki zaroorat nahi hoti, isliye yeh screens boht patli, saaf aur behreen contrast deti hain.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Printers Layout</strong><br><br>
+                    <span class="keyword-badge">Impact Printers</span>
+                    <span class="keyword-badge">Laser Printer</span>
+                    <span class="keyword-badge">Ink-Jet Printer</span>
+                    <span class="keyword-badge">3D Printing</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Printers are strictly categorized into two operational methods:
+                    <ul>
+                        <li><strong>Impact Printers:</strong> Feature a mechanical physical striking element that hits an inked ribbon directly against paper (e.g., traditional Dot-Matrix machines). They are exceptionally loud, print in low quality, but remain mandatory for generating carbon-copy invoices.</li>
+                        <li><strong>Non-Impact Printers:</strong> No physical contact. <strong>Laser Printers</strong> use a static charge drum to bind dry powder ink (toner) to paper via heating rollers—offering blazing speeds. <strong>Ink-Jet Printers</strong> spray fine liquid ink droplets from cartridges to achieve high-vibrancy photo prints.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Printers ki do main categories hain:
+                        <ul>
+                            <li><strong>Impact Printers:</strong> Yeh mechanical pin se ink ribbon ko kaghaz par thak-thak kar ke maarte hain (jaise Dot-Matrix printers). Yeh boht shor karte hain aur quality kharab hoti hai par multi-layered carbon copy bills ke liye aaj bhi banks mein zaroori hain.</li>
+                            <li><strong>Non-Impact Printers:</strong> Yeh kaghaz par chot nahi maarte. <strong>Laser Printers</strong> sokhi ink powder (toner) ko drum aur heat ke zariye kaghaz par chipkatay hain, yeh boht tez hote hain. <strong>Ink-Jet Printers</strong> liquid ink ke barik qatre kaghaz par spray karte hain jo high-quality photos ke liye behtar hain.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- CHAPTER 5 -->
+    <h2>Chapter 5: System Software: Operating Systems and Utility Programs</h2>
+    <p>Investigates system programs operating directly above the raw electronic silicon layer to orchestrate memory, scheduling tasks, and hardware resources.</p>
+
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Core Term & Keywords</th>
+                <th style="width: 75%;">Comprehensive Explanations & Summaries</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>System vs. Application Software</strong><br><br>
+                    <span class="keyword-badge">System Control</span>
+                    <span class="keyword-badge">Application Task</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    All computer code is divided based on objective: <strong>System Software</strong> acts as the background operational foundation, running behind the scenes to directly control, boot, and coordinate core hardware components (e.g., Microsoft Windows, device drivers). <strong>Application Software</strong> consists of end-user programs explicitly launched to fulfill specific productivity, creative, or entertainment goals (e.g., web browsers, games, word processors).
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Computer programming ko do baray hisson mein banta jata hai: <strong>System Software</strong> background mein reh kar computer ke puray hardware, booting aur operations ko chala raha hota hai (jaise Windows OS ya drivers). Jabke <strong>Application Software</strong> woh programs hote hain jinhe user apni marzi se kisi khas kaam ko poora karne ke liye kholta hai (jaise Chrome browser, WhatsApp, ya video games).
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Core Operating System Duties</strong><br><br>
+                    <span class="keyword-badge">Resource Allocation</span>
+                    <span class="keyword-badge">User Interface</span>
+                    <span class="keyword-badge">GUI vs. CLI</span>
+                    <span class="keyword-badge">File Management</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    An <strong>Operating System (OS)</strong> manages resources and handles primary system operations:
+                    <ul>
+                        <li><strong>Resource Allocation:</strong> Monitering CPU clock allocation, managing the RAM address space, and prioritizing device demands.</li>
+                        <li><strong>User Interface (UI):</strong> Providing an interaction medium. Can be graphical (<strong>GUI</strong>—using mouse clicks, icons, and menus) or text-driven (<strong>CLI</strong>—where users type exact syntax commands into a terminal).</li>
+                        <li><strong>File and Security Management:</strong> Tracking directory hierarchies, keeping file systems structured, and validating user passwords.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> <strong>Operating System (OS)</strong> computer ka sab se bara manager hota hai jo yeh main kaam karta hai:
+                        <ul>
+                            <li><strong>Resource Allocation:</strong> CPU ka time manage karna, kis program ko kitni RAM deni hai, yeh sab taye karna.</li>
+                            <li><strong>User Interface:</strong> User ko computer chalane ka rasta dena. <strong>GUI</strong> mein graphical icons, mouse clicks, aur visual menus hote hain (jaise standard Windows). <strong>CLI</strong> mein text commands khud type karni parti hain (jaise CMD terminal).</li>
+                            <li><strong>File Management:</strong> Hard disk mein files ka hifazati structure aur folders manage karna.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Processing Enhancements</strong><br><br>
+                    <span class="keyword-badge">Multitasking</span>
+                    <span class="keyword-badge">Multiprocessing</span>
+                    <span class="keyword-badge">Virtual Memory</span>
+                    <span class="keyword-badge">Swapping</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    To maximize throughput, the OS relies on advanced architecture strategies:
+                    <ul>
+                        <li><strong>Multiprocessing:</strong> Coordinating and running distinct programmatic tasks across two or more physical CPU cores simultaneously.</li>
+                        <li><strong>Virtual Memory:</strong> An asset management trick. When physical RAM is entirely full of active applications, the OS allocates a hidden block of the hard drive storage disk to act as temporary auxiliary RAM. It coordinates <strong>swapping</strong> (paging data back and forth between active RAM and the slow hard drive).</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Computer ki kaam karne ki capacity badhane ke liye OS advanced tareeqay istemaal karta hai:
+                        <ul>
+                            <li><strong>Multiprocessing:</strong> Aik se zyada physical CPU cores par aik sath mukhtalif programming tasks baant kar speed barhana.</li>
+                            <li><strong>Virtual Memory:</strong> Aik shandaar trick hai. Jab computer ki physical RAM poori tarah bhar jati hai, to OS hard disk ka aik hissa temporary RAM ke taur par use karne lagta hai. Is arzi memory transfer ke amal ko <strong>swapping</strong> kehte hain.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Utility Software Categories</strong><br><br>
+                    <span class="keyword-badge">File Compression</span>
+                    <span class="keyword-badge">Antivirus</span>
+                    <span class="keyword-badge">Defragmentation</span>
+                    <span class="keyword-badge">Backup System</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Utilities perform specialized maintenance tasks to safeguard and tune system performance:
+                    <ul>
+                        <li><strong>File Compression:</strong> Algorithms that shrink file footprints for fast internet transmission (e.g., WinZip, WinRAR).</li>
+                        <li><strong>Antivirus Programs:</strong> Scan storage blocks to quarantine malicious malware threats.</li>
+                        <li><strong>Backup Utilities:</strong> Duplicate critical data repositories to an independent secondary drive location for emergency restoration.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Utility programs operating system ke madadgaar hote hain jo computer ki maintenance aur safety ka khayal rakhte hain:
+                        <ul>
+                            <li><strong>File Compression:</strong> Files ke redundant binary codes chotay kar ke unka size compress karna taake internet par asani se bheji ja sakein (jaise WinZip / WinRAR).</li>
+                            <li><strong>Antivirus:</strong> Computer ke andar chupay khatarnak malware aur viruses ko dhoond kar khatam karna.</li>
+                            <li><strong>Backup Utilities:</strong> Zaroori files ki duplicate copy kisi doosri safe hard drive par banana taake masla hone par data wapas laya ja sakay.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- CHAPTER 6 -->
+    <h2>Chapter 6: Application Software</h2>
+    <p>Examines commercial software licensing ownership structures, cloud-delivery mechanics, and specialized corporate productivity suites.</p>
+
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Core Term & Keywords</th>
+                <th style="width: 75%;">Comprehensive Explanations & Summaries</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>Software Ownership Rights</strong><br><br>
+                    <span class="keyword-badge">Commercial</span>
+                    <span class="keyword-badge">Shareware</span>
+                    <span class="keyword-badge">Freeware</span>
+                    <span class="keyword-badge">Open Source</span>
+                    <span class="keyword-badge">Public Domain</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Software distribution is strictly governed by Intellectual Property copyright parameters:
+                    <ul>
+                        <li><strong>Commercial Software:</strong> Paid, proprietary software licensed for use without code access (e.g., MS Office, Adobe Photoshop).</li>
+                        <li><strong>Shareware:</strong> Distributed free on a trial evaluation basis; locking features or expiring after a set duration until payment is made.</li>
+                        <li><strong>Freeware:</strong> Copyrighted software available entirely free of cost (e.g., Skype, Google Chrome).</li>
+                        <li><strong>Open Source:</strong> Completely free programs where the raw underlying source code is open for public adjustment and development.</li>
+                        <li><strong>Public Domain:</strong> Software donated to the public with absolutely zero copyright restrictions.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Software istemaal karne ke qanooni haqooq mukhtalif types ke hote hain:
+                        <ul>
+                            <li><strong>Commercial:</strong> Paise de kar license kharidna parta hai aur iska background code secret hota hai (jaise Photoshop).</li>
+                            <li><strong>Shareware:</strong> Shuru mein kuch dinon ke liye free trial diya jata hai, trial khatam hone par software lock ho jata hai jab tak aap paise na dein.</li>
+                            <li><strong>Freeware:</strong> Bilkul free hota hai par iska ownership company ke paas hi rehti hai (jaise Skype).</li>
+                            <li><strong>Open Source:</strong> Iska original software code internet par sab ke liye hazir hota hai taake log isme tabdeeli behtari la sakein.</li>
+                            <li><strong>Public Domain:</strong> Is par koi copyright qanoon nahi hota, yeh public ke liye bilkul azad hota hai.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Productivity Software Layout</strong><br><br>
+                    <span class="keyword-badge">Word Wrapping</span>
+                    <span class="keyword-badge">Formulas & Functions</span>
+                    <span class="keyword-badge">Fields vs. Records</span>
+                    <span class="keyword-badge">DBMS Tables</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Enterprise software suites cover specific analytical and relational database needs:
+                    <ul>
+                        <li><strong>Word Processing (MS Word):</strong> Handles textual document generation, featuring <em>word wrap</em> (forcing text to line break automatically at margins).</li>
+                        <li><strong>Spreadsheets (MS Excel):</strong> Grid sheets analyzing matrix calculations. Employs <strong>Formulas</strong> (user-written expressions, e.g., <span class="math">=A1+B1</span>) and <strong>Functions</strong> (pre-programmed internal shortcuts, e.g., <span class="math">=SUM(A1:A10)</span>). A <em>Cell</em> is the intersection row-column coordinate.</li>
+                        <li><strong>Database Management Systems (DBMS - MS Access):</strong> Organizes transactional relational data tables. A single attribute category/column is a <strong>Field</strong>. A complete structured data row containing all related fields for one entry is a <strong>Record</strong>. Multiple records form a <strong>Table</strong>.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Office productivity software ke mukhltif professional kaam hote hain:
+                        <ul>
+                            <li><strong>Word Processing:</strong> Text documents (letters, reports) banana, jisme auto <em>word wrap</em> line lines ko control karta hai.</li>
+                            <li><strong>Spreadsheets:</strong> Rows aur columns ka grid hota hai. Isme calculations ke liye <strong>Formulas</strong> (jo user khud likhta hai jaise <span class="math">=A1+B1</span>) aur <strong>Functions</strong> (pehlay se banay banaye shortcuts jaise <span class="math">=SUM(B1:B20)</span>) lagaye jaate hain.</li>
+                            <li><strong>Database Software (DBMS):</strong> Relational data safe rakhne ke liye hota hai. Column ko <strong>Field</strong> (single category data) kehte hain, aur poori row ko <strong>Record</strong> (aik bande ki complete detail) kehte hain. Yeh sab mil kar <strong>Table</strong> banate hain.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- CHAPTER 7 -->
+    <h2>Chapter 7: Computer Networks</h2>
+    <p>Details structural topologies, transmission media physics, hardware routing mechanisms, and internet standard protocols.</p>
+
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Core Term & Keywords</th>
+                <th style="width: 75%;">Comprehensive Explanations & Summaries</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <strong>Network Topology & Framework</strong><br><br>
+                    <span class="keyword-badge">Star Topology</span>
+                    <span class="keyword-badge">Bus Network</span>
+                    <span class="keyword-badge">Mesh Architecture</span>
+                    <span class="keyword-badge">LAN vs. WAN</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Topology maps the physical structural layout design of interconnected network nodes:
+                    <ul>
+                        <li><strong>Star Network:</strong> Every individual terminal connects directly to a central hub or switch device. If an outlying device cable snaps, only that node goes offline, making this standard highly resilient and universally adopted for modern <strong>LANs</strong> (Local Area Networks covering a room/home/building).</li>
+                        <li><strong>Bus Network:</strong> All nodes tap into a single long central backbone cable run. If the main cable experiences a physical break, the entire network fails instantly.</li>
+                        <li><strong>Mesh Network:</strong> Every device features redundant physical cable connections to every single other node in the network—offering maximum fault tolerance. Highly expensive, used for wide global <strong>WANs</strong> (Wide Area Networks spanning cities/nations).</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Network Topology ka matlab hai devices ko aapas mein jorne ka physical structural design:
+                        <ul>
+                            <li><strong>Star Topology:</strong> Har computer aik central switch device ke sath direct alag taar se jura hota hai. Agar aik computer ki taar toot jaye to baqi network chalta rehta hai. Yeh aaj kal ke <strong>LAN</strong> (Local Area Network—jo aik kamre ya university building tak hota hai) mein use hota hai.</li>
+                            <li><strong>Bus Topology:</strong> Tamam computers aik hi lambi central cable ke sath line mein jure hote hain. Agar woh main cable beech se toot jaye, to poora network aik dam baith jata hai.</li>
+                            <li><strong>Mesh Topology:</strong> Har computer network ke baqi saare computers se alag direct wire se jura hota hai, yeh boht safe par mehanga hota hai aur bare <strong>WAN</strong> (Wide Area Network—jo shehron aur mulkon ko jorta hai) mein use hota hai.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Transmission Media Physics</strong><br><br>
+                    <span class="keyword-badge">Twisted-Pair Copper</span>
+                    <span class="keyword-badge">Coaxial Cable</span>
+                    <span class="keyword-badge">Fiber-Optic Light</span>
+                    <span class="keyword-badge">Wireless Waves</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Physical pathways guiding data transmission packets across network boundaries:
+                    <ul>
+                        <li><strong>Twisted-Pair:</strong> Standard copper telephone or ethernet wires twisted in pairs to minimize minor signal cross-talk.</li>
+                        <li><strong>Coaxial Cable:</strong> Heavily insulated thick copper core wire used primarily for high-frequency cable television feeds.</li>
+                        <li><strong>Fiber-Optic Cable:</strong> Contains dozens of microscopic clear strands of pure glass. It transmits binary signals as rapid pulses of light. Fiber-optic cables provide extreme bandwidth speed, travel miles without signal degradation, and are 100% immune to electromagnetic or industrial electrical interference.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Network par data travel karne ke mukhtalif raste (media) hote hain:
+                        <ul>
+                            <li><strong>Twisted-Pair:</strong> Aam copper ki ethernet taarein jo pairs mein twist hoti hain taake electrical noise kam ho sakay.</li>
+                            <li><strong>Coaxial Cable:</strong> Moti insulated copper wire jo aam taur par cable TV networks mein use hoti hai.</li>
+                            <li><strong>Fiber-Optic Cable:</strong> Isme bareek sheeshe (glass) ke dhaage hote hain jinme data current ki bajaye light pulses (roshni ki raftar) par chalta hai. Yeh dunya ka sab se tez tareen wired medium hai jispar baher ki kisi kisam ki electrical interference ka asar nahi hota.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Networking Hardware & Protocols</strong><br><br>
+                    <span class="keyword-badge">Modem translation</span>
+                    <span class="keyword-badge">Switch routing</span>
+                    <span class="keyword-badge">Router boundary</span>
+                    <span class="keyword-badge">TCP/IP protocol</span>
+                </td>
+                <td>
+                    <div class="lang-title">[English]</div>
+                    Hardware infrastructure coupled with programmatic software communication rules:
+                    <ul>
+                        <li><strong>Modem:</strong> Modulates and demodulates signals, translating incoming analog waves from infrastructure lines into digital computer data bits.</li>
+                        <li><strong>Switch:</strong> Actively inspects incoming packet headers to route data inside a local area network directly to the specific destination MAC address port.</li>
+                        <li><strong>Router:</strong> An intelligent network boundary controller that forwards data packets across completely different network architectures (e.g., bridging your home LAN out to the global internet).</li>
+                        <li><strong>TCP/IP (Transmission Control Protocol/Internet Protocol):</strong> The standardized global protocol suite governing packet assembly, address routing rules, and data transfer integrity across the Internet.</li>
+                    </ul>
+                    <div class="roman-urdu">
+                        <strong>[Roman Urdu]</strong> Network hardware aur data transfer ke asool (protocols):
+                        <ul>
+                            <li><strong>Modem:</strong> Yeh analog signals ko computer ke samajhne wale digital signals (bits) mein badalta hai.</li>
+                            <li><strong>Switch:</strong> Local network (LAN) ke andar computers ko jorta hai aur data ko check karke direct target computer tak pohanchata hai.</li>
+                            <li><strong>Router:</strong> Yeh do bilkul alag networks ko aapas mein jorta hai (jaise aapke ghar ke LAN ko poori dunya ke Internet se connect karna) aur data ko behtareen rasta dikhata hai.</li>
+                            <li><strong>TCP/IP:</strong> Internet ka sab se main protocol (rules set) hai jo taye karta hai ke data packets kaise banyenge aur internet par sahi address par kaise travel karenge.</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="page-break-before: always;"></div>
+
+    <!-- SCENARIO QUESTIONS SECTION -->
+    <h2 style="border-left: 5px solid #1B365D;">Comprehensive Exam Practice: Scenario-Based Analysis</h2>
+    <p>Use these rigorous, multi-chapter engineering scenarios to prepare for final examination question formatting.</p>
+
+    <div class="scenario-box">
+        <h4>Scenario 1: System Memory Overflow & Storage Thrashing Diagnostic</h4>
+        <p><strong>Problem:</strong> Ali is working on a high-end corporate laptop. He launches Adobe Premier Pro, heavy 3D rendering scripts, and opens 25 research tabs simultaneously in a web browser. Suddenly, his computer becomes incredibly slow. He notices that his laptop's Solid-State Drive (SSD) light is blinking furiously, indicating intense reading/writing activity, even though he is not downloading or saving any files. After restarting the system, speed returns to normal for a brief period before slowing down again.</p>
+        <p><strong>Diagnostic & Solution (English):</strong> Ali is experiencing acute physical memory exhaustion. The multiple heavyweight applications have completely filled up his physical <strong>RAM (Random Access Memory)</strong> capacity. To prevent an immediate program crash, his <strong>Operating System (OS)</strong> activated its built-in memory extension mechanism called <strong>Virtual Memory</strong>. The OS began executing <strong>swapping/paging</strong>, which means it designated a block of the storage drive (the SSD) as temporary RAM and began moving less active application data back and forth between physical RAM and storage. Because flash storage drives are significantly slower than actual CPU-bound RAM, this intense input/output loop causes severe system slowdown (known as <em>disk thrashing</em>). Restarting flushes the volatile memory registers and RAM empty, temporarily curing the bottleneck until the RAM fills up again.</p>
+        <div class="roman-urdu">
+            <strong>Diagnostic & Solution (Roman Urdu):</strong> Ali ke laptop ki physical <strong>RAM</strong> poori tarah bhar chuki hai kyunke usne aik sath boht baray programs aur 25 browser tabs khole hue hain. Laptop ko crash hone se bachane ke liye <strong>Operating System</strong> ne apni built-in trick <strong>Virtual Memory</strong> on kar di hai. OS ne hard storage (SSD) ke aik hissay ko temporary RAM bana diya hai aur data ko RAM aur SSD ke darmiyan adla-badli (<strong>swapping/formatting</strong>) karna shuru kar diya hai. Kyunke SSD ki speed actual RAM se boht slow hoti hai, is heavy data transfer cycle ki wajah se laptop slow ho jata hai aur SSD ki light bar bar blink karti hai. Restart karne se volatile RAM bilkul saaf ho jati hai isliye speed arzi taur par theek ho jati hai.
+        </div>
     </div>
-  </section>
 
-  <!-- About -->
-  <section class="about" id="about">
+    <div class="scenario-box">
+        <h4>Scenario 2: Industrial Network Media Selection & Traffic Topology Design</h4>
+        <p><strong>Problem:</strong> A textile manufacturing mill spans a massive three-story brick factory building. Heavy electric looms, massive automated spinning machinery, and high-voltage power generators operate on the ground floor, creating immense electrical noise and magnetic fields. Management needs to install a local network across all floors to share inventory data and route transactional traffic safely out to their central internet server without data packets getting corrupted by the heavy equipment. They also require maximum protection against network downtime across the building.</p>
+        <p><strong>Diagnostic & Solution (English):</strong> To combat the severe electromagnetic interference (EMI) generated by the heavy factory machinery, the factory must avoid copper cables (Twisted-pair or Coaxial) and deploy <strong>Fiber-Optic Cables</strong> for the backbone infrastructure linking the floors. Fiber-optic transmission paths utilize light pulses inside pure glass strands, making them 100% immune to all forms of electrical noise or magnetic interference. Structurally, the network layout must implement a <strong>Star Topology</strong> on each floor connected to a central managed <strong>Switch</strong>, with a main <strong>Router</strong> configured at the facility's boundary. A star topology ensures that if an individual network cable on a machine breaks, only that single node goes offline, maintaining network uptime for the rest of the factory. The central router will securely encapsulate local packets and route them out across network boundaries to the global server via standard <strong>TCP/IP protocols</strong>.</p>
+        <div class="roman-urdu">
+            <strong>Diagnostic & Solution (Roman Urdu):</strong> Factory ki bhaari machino aur generators se boht zyada electromagnetic interference (electrical noise) peda ho rahi hai, isliye agar copper taarein use ki gaein to data kharab ho jaye ga. Factory ko floor connections ke liye <strong>Fiber-Optic Cables</strong> lagani chahiye kyunke isme data light waves ki shakl mein sheeshe ke andar chalta hai jo electrical noise se 100% mehfooz rehta hai. Har floor par computers ko aapas mein jorne ke liye <strong>Star Topology</strong> use karni chahiye jahan har computer aik central <strong>Switch</strong> se connect ho, taake aik taar tootne se baki factory ka internet chalta rahe. Poori factory ke data ko internet server tak sahi salamat bejne ke liye boundary par aik <strong>Router</strong> lagana parega jo <strong>TCP/IP rules</strong> ke mutabiq traffic manage karega.
+        </div>
+    </div>
 
-    <h2 class="section-title">About Sweet Crumbs 💖</h2>
-
-    <p>
-      Sweet Crumbs is a tiny imaginary bakery universe full of cozy
-      pastel colors, tiny desserts, stickers, ribbons, sparkles,
-      and hand-drawn aesthetics. This website is designed to feel
-      like a cute digital scrapbook mixed with a dreamy bakery shop.
-    </p>
-
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <p>Made with sprinkles, sugar & creativity ✨</p>
-  </footer>
+    <div class="scenario-box">
+        <h4>Scenario 3: Enterprise Data Architecture Setup & Licensing Choice</h4>
+        <p><strong>Problem:</strong> A fast-growing logistics company wants to build a software system to track their customer shipping ledger history, package barcode IDs, delivery vehicle assignments, and real-time payment metrics. The operations head argues they should simply use a Microsoft Excel spreadsheet because they already know how to write custom calculation formulas and built-in average functions. Clarify the core architectural structural differences between spreadsheets and relational databases to guide them, and explain how software ownership rights will apply if they choose a free customizable Open-Source system over standard Commercial packages.</p>
+        <p><strong>Diagnostic & Solution (English):</strong> The operations head is making a serious structural error. <strong>Spreadsheet software (MS Excel)</strong> is designed primarily for financial arithmetic calculations, small-scale models, and interactive data plotting using <strong>Formulas</strong> and <strong>Functions</strong> inside worksheets and single cells; it lacks advanced data integrity constraints. For complex relational transactional tracking, they require a <strong>Database Management System (DBMS)</strong>. In a DBMS, data is explicitly structured inside <strong>Tables</strong> consisting of strict <strong>Fields</strong> (columns defining specific attributes like Customer ID or Barcode number) and matching <strong>Records</strong> (rows holding one complete specific entry across fields). Databases prevent validation anomalies and can easily link different tables together (e.g., mapping a specific customer record to a specific delivery truck record). <br>If they choose an <strong>Open-Source software</strong> system instead of a closed <strong>Commercial software</strong> license, they will pay zero upfront software license fees and gain complete access to modify the raw internal source code to fit their logistics operations perfectly, although they will lose corporate vendor technical helpdesk support.</p>
+        <div class="roman-urdu">
+            <strong>Diagnostic & Solution (Roman Urdu):</strong> Logistics company ke manager ka spreadsheet use karne ka mashwara ghalat hai. <strong>Spreadsheet (Excel)</strong> sirf choti mathematical calculations aur formulas/functions ke liye hoti hai, isme baray data ka structural validation check nahi hota. Company ko <strong>Database Management System (DBMS)</strong> ki zaroorat hai. Database mein structured <strong>Tables</strong> hote hain jahan data columns (<strong>Fields</strong> jaise Barcode ID ya Customer Name) aur complete rows (<strong>Records</strong>) mein save hota hai jo aapas mein connected hoti hain. <br>Agar woh standard paid <strong>Commercial software</strong> ke bajaye free <strong>Open-Source software</strong> select karte hain, to unhe software ka koi license fee nahi dena parega aur unki it team software ke original background source code ko apni marzi ke mutabiq change kar sakegi, halankay isme unhe official customer support helpdesk nahi miley ga.
+        </div>
+    </div>
 
 </body>
 </html>
