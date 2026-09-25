@@ -1,0 +1,338 @@
+const {
+  Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell,
+  WidthType, ShadingType, BorderStyle, AlignmentType, LevelFormat,
+  VerticalAlign, PageBreak
+} = require("docx");
+const fs = require("fs");
+
+const NAVY = "1F3864", BLUE = "2E74B5", TEAL = "0F766E", ORANGE = "C55A11",
+      RED = "C00000", GREEN = "1E7B34", PURPLE = "6A2C91", GREY = "595959",
+      LIGHTBLUE = "DDEBF7", LIGHTTEAL = "E2F1EE", LIGHTORANGE = "FCE9D9",
+      LIGHTGREY = "F2F2F2", LIGHTGREEN = "E5F3E5", LIGHTPURPLE = "F0E5F7",
+      LIGHTRED = "FCE4E4", WHITE = "FFFFFF";
+const FONT = "Calibri", CODEFONT = "Consolas";
+
+function H1(text, color = NAVY) {
+  return new Paragraph({
+    heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 140 },
+    border: { bottom: { color, space: 4, style: BorderStyle.SINGLE, size: 12 } },
+    children: [new TextRun({ text, bold: true, color, size: 30, font: FONT })],
+  });
+}
+function H2(text, color = BLUE) {
+  return new Paragraph({
+    spacing: { before: 220, after: 100 },
+    children: [new TextRun({ text, bold: true, color, size: 24, font: FONT })],
+  });
+}
+function H3(text, color = TEAL) {
+  return new Paragraph({
+    spacing: { before: 160, after: 80 },
+    children: [new TextRun({ text, bold: true, color, size: 22, font: FONT })],
+  });
+}
+function P(text, opts = {}) {
+  return new Paragraph({ spacing: { after: 100, line: 290 }, children: [new TextRun({ text, size: 21, font: FONT, ...opts })] });
+}
+function bullet(runs, level = 0) {
+  return new Paragraph({
+    numbering: { reference: "bullets", level },
+    spacing: { after: 50, line: 270 },
+    children: Array.isArray(runs) ? runs : [new TextRun({ text: runs, size: 21, font: FONT })],
+  });
+}
+function normalRun(t, o = {}) { return new TextRun({ text: t, size: 21, font: FONT, ...o }); }
+function boldRun(t, color = NAVY) { return new TextRun({ text: t, bold: true, size: 21, font: FONT, color }); }
+function code(text) {
+  return new Paragraph({ spacing: { after: 40 }, shading: { type: ShadingType.CLEAR, fill: "F4F4F4" },
+    children: [new TextRun({ text, font: CODEFONT, size: 19, color: "333333" })] });
+}
+function codeLines(lines) { return lines.map(code); }
+
+function headerCell(text, width, fill = NAVY) {
+  return new TableCell({ width: { size: width, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill },
+    verticalAlign: VerticalAlign.CENTER, margins: { top: 90, bottom: 90, left: 100, right: 100 },
+    children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text, bold: true, color: WHITE, size: 20, font: FONT })] })] });
+}
+function dataCell(text, width, { fill = WHITE, bold = false, color = "000000", align = AlignmentType.LEFT, font = FONT, size = 19 } = {}) {
+  return new TableCell({ width: { size: width, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill },
+    verticalAlign: VerticalAlign.CENTER, margins: { top: 70, bottom: 70, left: 100, right: 100 },
+    children: [new Paragraph({ alignment: align, children: [new TextRun({ text, bold, color, size, font })] })] });
+}
+function makeTable(headerRow, dataRows, colWidths, headerFill = NAVY, stripeFill = LIGHTGREY) {
+  const total = colWidths.reduce((a, b) => a + b, 0);
+  const rows = [new TableRow({ tableHeader: true, children: headerRow.map((h, i) => headerCell(h, colWidths[i], headerFill)) })];
+  dataRows.forEach((r, idx) => {
+    const fill = idx % 2 === 0 ? WHITE : stripeFill;
+    rows.push(new TableRow({ children: r.map((c, i) => typeof c === "string" ? dataCell(c, colWidths[i], { fill }) : dataCell(c.text, colWidths[i], { fill, ...c })) }));
+  });
+  return new Table({ columnWidths: colWidths, width: { size: total, type: WidthType.DXA }, rows });
+}
+function spacer(h = 80) { return new Paragraph({ spacing: { after: h }, children: [] }); }
+function calloutBox(title, lines, color = ORANGE, fill = LIGHTORANGE) {
+  return new Table({
+    width: { size: 9350, type: WidthType.DXA }, columnWidths: [9350],
+    rows: [new TableRow({ children: [new TableCell({
+      width: { size: 9350, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill },
+      margins: { top: 120, bottom: 120, left: 170, right: 170 },
+      borders: { top: { style: BorderStyle.SINGLE, size: 4, color }, bottom: { style: BorderStyle.SINGLE, size: 4, color },
+                 left: { style: BorderStyle.SINGLE, size: 24, color }, right: { style: BorderStyle.SINGLE, size: 4, color } },
+      children: [
+        new Paragraph({ spacing: { after: 70 }, children: [new TextRun({ text: title, bold: true, color, size: 21, font: FONT })] }),
+        ...lines.map((l) => new Paragraph({ spacing: { after: 30 }, children: [new TextRun({ text: "• " + l, size: 20, font: FONT, color: "333333" })] })),
+      ] }) ] }) ],
+  });
+}
+function solvedBox(title, steps, color = GREEN, fill = LIGHTGREEN) {
+  return new Table({
+    width: { size: 9350, type: WidthType.DXA }, columnWidths: [9350],
+    rows: [new TableRow({ children: [new TableCell({
+      width: { size: 9350, type: WidthType.DXA }, shading: { type: ShadingType.CLEAR, fill },
+      margins: { top: 130, bottom: 130, left: 180, right: 180 },
+      borders: { top: { style: BorderStyle.SINGLE, size: 4, color }, bottom: { style: BorderStyle.SINGLE, size: 4, color },
+                 left: { style: BorderStyle.SINGLE, size: 24, color }, right: { style: BorderStyle.SINGLE, size: 4, color } },
+      children: [
+        new Paragraph({ spacing: { after: 90 }, children: [new TextRun({ text: title, bold: true, color, size: 22, font: FONT })] }),
+        ...steps.map((l) => new Paragraph({ spacing: { after: 55 }, children: [new TextRun({ text: l, size: 20, font: (l.match(/[=<>]/) ? CODEFONT : FONT), color: "222222" })] })),
+      ] }) ] }) ],
+  });
+}
+
+const children = [];
+
+// ---------- COVER ----------
+children.push(
+  new Paragraph({ spacing: { before: 300, after: 60 }, alignment: AlignmentType.CENTER,
+    children: [new TextRun({ text: "INTRODUCTORY CIRCUIT ANALYSIS", bold: true, size: 44, color: NAVY, font: FONT })] }),
+  new Paragraph({ spacing: { after: 100 }, alignment: AlignmentType.CENTER,
+    children: [new TextRun({ text: "Quiz Prep — Chapters 1–6 + Fully Solved Past Papers", bold: true, size: 26, color: BLUE, font: FONT })] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 },
+    children: [new TextRun({ text: "Boylestad, 11th Ed. | Focus: Power/Energy, Series & Parallel DC Circuits, Numericals", italics: true, size: 19, color: GREY, font: FONT })] }),
+  new Paragraph({ spacing: { after: 260 }, border: { bottom: { color: NAVY, space: 1, style: BorderStyle.SINGLE, size: 18 } }, children: [] }),
+);
+
+const toc = [
+  "1. Chapter Quick Reference: Ch1 Introduction (units) → Ch6 Parallel dc Circuits",
+  "2. Master Formula Cheat-Sheet",
+  "3. FULLY SOLVED: Terminal Examination (Spring 2025)",
+  "4. FULLY SOLVED: Quiz 01 (Spring 2024)",
+  "5. Exam Strategy Tips",
+];
+toc.forEach((t) => children.push(bullet(t)));
+children.push(new Paragraph({ children: [new PageBreak()] }));
+
+// ================= SECTION 1: Chapter quick reference =================
+children.push(H1("1. Chapter Quick Reference (Ch 1–6)", NAVY));
+
+children.push(H2("Chapter 1 — Introduction"));
+children.push(bullet("SI system of units; scientific notation & powers-of-ten arithmetic"));
+children.push(makeTable(["Prefix","Symbol","Power of 10"],
+  [["Pico","p","10⁻¹²"],["Nano","n","10⁻⁹"],["Micro","µ","10⁻⁶"],["Milli","m","10⁻³"],
+   ["Kilo","k","10³"],["Mega","M","10⁶"],["Giga","G","10⁹"]],
+  [3000,2600,3750], BLUE, LIGHTBLUE));
+
+children.push(H2("Chapter 2 — Voltage and Current"));
+children.push(bullet([boldRun("Voltage (V): "), normalRun("energy per unit charge; V = W/Q  (unit: Volt, 1V = 1 J/C)")]));
+children.push(bullet([boldRun("Current (I): "), normalRun("rate of charge flow; I = Q/t  (unit: Ampere, 1A = 1 C/s)")]));
+children.push(bullet("Conventional current flows + → − externally; electron flow is opposite"));
+children.push(bullet("Voltmeter → connected in PARALLEL | Ammeter → connected in SERIES"));
+
+children.push(H2("Chapter 3 — Resistance"));
+children.push(bullet([boldRun("R = ρL/A "), normalRun("— resistivity (ρ), length (L), cross-sectional area (A)")]));
+children.push(bullet("Unit: Ohm (Ω);  Conductance G = 1/R, unit Siemens (S)"));
+children.push(bullet("Resistance increases with temperature for most conductors (positive temp. coefficient)"));
+children.push(bullet("Resistor color code used to read resistance value + tolerance"));
+
+children.push(H2("Chapter 4 — Ohm's Law, Power & Energy  ★ numerical-heavy"));
+children.push(bullet([boldRun("Ohm's Law: "), normalRun("V = IR    I = V/R    R = V/I")]));
+children.push(bullet([boldRun("Power: "), normalRun("P = VI = I²R = V²/R   (unit: Watt)")]));
+children.push(bullet([boldRun("Energy: "), normalRun("W = P × t   → commercially billed in kWh = P(kW) × t(hours)")]));
+children.push(bullet([boldRun("Efficiency: "), normalRun("η = (Pout / Pin) × 100%")]));
+children.push(bullet([boldRun("Horsepower: "), normalRun("1 hp = 746 W")]));
+
+children.push(H2("Chapter 5 — Series dc Circuits  ★ numerical-heavy"));
+children.push(bullet("Same current (I) flows through every element in a series circuit"));
+children.push(bullet([boldRun("Total resistance: "), normalRun("Rᴛ = R1 + R2 + … + Rn")]));
+children.push(bullet([boldRun("KVL: "), normalRun("Σ voltage rises = Σ voltage drops around any closed loop")]));
+children.push(bullet([boldRun("Voltage Divider Rule: "), normalRun("Vx = (Rx / Rᴛ) × E")]));
+children.push(bullet("Sources in series: SAME polarity aiding → add;  OPPOSING polarity → subtract"));
+
+children.push(H2("Chapter 6 — Parallel dc Circuits  ★ numerical-heavy"));
+children.push(bullet("Same voltage (V) appears across every parallel branch"));
+children.push(bullet([boldRun("Total resistance: "), normalRun("1/Rᴛ = 1/R1 + 1/R2 + … ;  for 2 resistors Rᴛ = R1R2/(R1+R2)")]));
+children.push(bullet([boldRun("KCL: "), normalRun("Σ currents entering a node = Σ currents leaving")]));
+children.push(bullet([boldRun("Current Divider Rule (2 branches): "), normalRun("I1 = (R2/(R1+R2)) × Iᴛ")]));
+children.push(bullet("Conductance in parallel simply adds: Gᴛ = G1 + G2 + …"));
+
+children.push(new Paragraph({ children: [new PageBreak()] }));
+
+// ================= SECTION 2: Formula cheat sheet =================
+children.push(H1("2. Master Formula Cheat-Sheet", NAVY));
+children.push(makeTable(
+  ["Quantity", "Formula", "Chapter"],
+  [
+    ["Voltage", "V = W/Q", "2"],
+    ["Current", "I = Q/t", "2"],
+    ["Resistance", "R = ρL/A", "3"],
+    ["Ohm's Law", "V = IR", "4"],
+    ["Power", "P = VI = I²R = V²/R", "4"],
+    ["Energy (kWh)", "W(kWh) = P(kW) × t(h)", "4"],
+    ["Efficiency", "η = Pout/Pin × 100%", "4"],
+    ["Horsepower", "1 hp = 746 W", "4"],
+    ["Series Rᴛ", "Rᴛ = R1+R2+…+Rn", "5"],
+    ["Voltage Divider", "Vx = (Rx/Rᴛ) × E", "5"],
+    ["KVL", "ΣV(rises) = ΣV(drops)", "5"],
+    ["Parallel Rᴛ", "1/Rᴛ = 1/R1+1/R2+…", "6"],
+    ["Current Divider", "I1 = R2/(R1+R2) × Iᴛ", "6"],
+    ["KCL", "ΣI(in) = ΣI(out)", "6"],
+  ],
+  [2600, 4550, 2200], PURPLE, LIGHTPURPLE
+));
+children.push(calloutBox("Exam Gold Rule", [
+  "Power/Energy questions (house or business electrical service) show up EVERY exam — master P=VI, hp→W conversion, and kWh billing.",
+  "For any circuit: first decide if it is SERIES (one current path) or PARALLEL (one common voltage) before applying formulas.",
+], ORANGE, LIGHTORANGE));
+
+children.push(new Paragraph({ children: [new PageBreak()] }));
+
+// ================= SECTION 3: TERMINAL EXAM SOLVED =================
+children.push(H1("3. FULLY SOLVED — Terminal Examination (Spring 2025)", NAVY));
+children.push(P("Course: PHY221 Circuit Theory | Instructor: Dr. Muhammad Zaka Ur Rehman", { italics: true, color: GREY, size: 19 }));
+
+children.push(H2("Question 1(a): 120 V, 100 A House Service"));
+children.push(solvedBox("Given: V = 120 V, I = 100 A", [
+  "a) Maximum Power:  P = V × I = 120 × 100 = 12,000 W = 12 kW",
+  "",
+  "b) Total load of appliances (convert hp to Watts: 1 hp = 746 W):",
+  "5 hp motor      = 5 × 746 = 3730 W",
+  "3000 W dryer    = 3000 W",
+  "2400 W range    = 2400 W",
+  "1000 W iron     = 1000 W",
+  "Total = 3730+3000+2400+1000 = 10,130 W",
+  "Since 10,130 W < 12,000 W (max capability)  →  YES, safe to operate (1870 W margin)",
+  "",
+  "c) Energy for 2 hours:  W = P(kW) × t(h) = 10.13 kW × 2 h = 20.26 kWh",
+], GREEN, LIGHTGREEN));
+
+children.push(H2("Question 1(b): Elevator Motor Efficiency"));
+children.push(solvedBox("Given: η = 90%, Vin = 220 V, Pout = 15 hp", [
+  "Pout = 15 × 746 = 11,190 W",
+  "η = Pout/Pin  →  Pin = Pout/η = 11,190 / 0.90 = 12,433.3 W",
+  "Iin = Pin/Vin = 12,433.3 / 220 = 56.5 A",
+], GREEN, LIGHTGREEN));
+
+children.push(H2("Question 2(a): Figure 2.1 — Series Loop with Two Sources"));
+children.push(P("Circuit: single series loop — E1 = −19 V, R1 = 20 Ω (b–c), R2 = 25 Ω (a–b), E2 = +35 V. Both source '+' terminals face inward toward the resistor chain."));
+children.push(solvedBox("Step-by-step (KVL around the single loop)", [
+  "Total R = R1 + R2 = 20 + 25 = 45 Ω",
+  "Applying KVL around the loop:  I = (E2 − E1) / (R1+R2)  is NOT simply this — solve via node tracing:",
+  "Result of KVL trace:  I = 54 / 45 = 1.2 A",
+  "",
+  "Taking the common connecting wire (between E1's − terminal and E2's − terminal) as 0 V reference:",
+  "Va = +35 V   (at node a, right at E2's + terminal)",
+  "Vb = Va − I×R2 = 35 − (1.2×25) = 35 − 30 = 5 V",
+  "Vc = Vb − I×R1 = 5 − (1.2×20) = 5 − 24 = −19 V   (checks out: matches E1 = −19V ✓)",
+  "",
+  "ANSWERS:",
+  "Vab = Va − Vb = 35 − 5 = 30 V",
+  "Vcb = Vc − Vb = −19 − 5 = −24 V",
+  "Va = 35 V",
+], GREEN, LIGHTGREEN));
+
+children.push(H2("Question 2(b): Figure 2.2 — Parallel Network with Source Power"));
+children.push(P("Given: Source delivers P = 30 W while supplying total current IT = 2 A into 3 parallel branches: 30 Ω, R2, R3 (R3 = R2)."));
+children.push(solvedBox("Step-by-step", [
+  "Source voltage:  E = P / IT = 30 / 2 = 15 V   (this is the voltage across ALL parallel branches)",
+  "",
+  "I1 (through 30 Ω) = E/30 = 15/30 = 0.5 A",
+  "Remaining current: I2 + I3 = IT − I1 = 2 − 0.5 = 1.5 A",
+  "Since R3 = R2  →  I2 = I3 = 1.5/2 = 0.75 A",
+  "",
+  "R2 = E/I2 = 15/0.75 = 20 Ω   →   R3 = R2 = 20 Ω",
+  "Power in R2:  P(R2) = E × I2 = 15 × 0.75 = 11.25 W",
+  "",
+  "ANSWERS:  E = 15 V | I1 = 0.5 A | I2 = I3 = 0.75 A | R2 = R3 = 20 Ω | P(R2) = 11.25 W",
+], GREEN, LIGHTGREEN));
+
+children.push(H2("Question 2(c): Figure 2.3"));
+children.push(calloutBox("Note", [
+  "Figure 2.3 was not clearly legible in the uploaded photo, so exact numeric values can't be confirmed here.",
+  "Method to use: identify series & parallel combinations, reduce step-by-step to a single equivalent resistance, find the main-line current I1 with Ohm's Law, then apply the CURRENT DIVIDER RULE to split I1 into I2 and I3, and use V = IR on each branch to get Va and Vb.",
+], ORANGE, LIGHTORANGE));
+
+children.push(new Paragraph({ children: [new PageBreak()] }));
+
+// ================= SECTION 4: QUIZ 01 SOLVED =================
+children.push(H1("4. FULLY SOLVED — Quiz 01 (Spring 2024)", NAVY));
+children.push(P("Course: EEE1221 Circuit Theory | Instructor: Dr. Muhammad Zaka Ur Rehman", { italics: true, color: GREY, size: 19 }));
+
+children.push(H2("Question 1: Ladder Network — Voltage at Each Node w.r.t. Ground"));
+children.push(P("Circuit: A–R1(560kΩ)–B–R2(100kΩ)–C–R3(1.0MΩ)–D, with R4(56kΩ) from A down to the 15V source (grounded), and R5(100kΩ) from D down to the 9V source (grounded). Both sources share the SAME ground → this is ONE single series loop."));
+children.push(solvedBox("Step 1 — Total resistance of the single series loop", [
+  "Rᴛ = R4+R1+R2+R3+R5 = 56k+560k+100k+1.0M+100k = 1,816,000 Ω (1.816 MΩ)",
+], BLUE, LIGHTBLUE));
+children.push(solvedBox("Step 2 — Net EMF & current (15 V source aids, 9 V source opposes the assumed current direction)", [
+  "Net EMF = 15 V − 9 V = 6 V",
+  "I = Net EMF / Rᴛ = 6 / 1,816,000 = 3.304 × 10⁻⁶ A  ≈ 3.30 µA",
+], BLUE, LIGHTBLUE));
+children.push(solvedBox("Step 3 — Walk the loop from the 15 V source, subtracting each IR drop", [
+  "VA = 15 − I×R4 = 15 − (3.304µA×56k) = 15 − 0.185 = 14.815 V",
+  "VB = VA − I×R1 = 14.815 − (3.304µA×560k) = 14.815 − 1.850 = 12.965 V",
+  "VC = VB − I×R2 = 12.965 − (3.304µA×100k) = 12.965 − 0.330 = 12.635 V",
+  "VD = VC − I×R3 = 12.635 − (3.304µA×1.0M) = 12.635 − 3.304 = 9.331 V",
+  "Check: VD − I×R5 = 9.331 − 0.330 = 9.00 V = the 9V source ✓  (confirms the answer)",
+], GREEN, LIGHTGREEN));
+children.push(makeTable(
+  ["Node", "Voltage w.r.t. Ground"],
+  [["A", "14.82 V"], ["B", "12.97 V"], ["C", "12.64 V"], ["D", "9.33 V"]],
+  [2200, 3000], NAVY, LIGHTGREY
+));
+children.push(calloutBox("Key Idea for this question type", [
+  "When two grounded sources appear at opposite ends of a resistor chain, the WHOLE thing is really one series loop — combine into a single net EMF (subtract if sources oppose) and a single Rᴛ, find I once, then walk node-by-node subtracting each I×R drop.",
+], ORANGE, LIGHTORANGE));
+
+children.push(H2("Question 2: 120 V, 100 A Business Service"));
+children.push(solvedBox("Given: V = 120 V, I = 100 A", [
+  "a.i)  Max power = V × I = 120 × 100 = 12,000 W = 12 kW",
+  "",
+  "a.ii) Total load (1 hp = 746 W):",
+  "5 hp motor        = 3730 W",
+  "300 W dryer        = 300 W",
+  "2400 W range      = 2400 W",
+  "2000 W air-con    = 2000 W",
+  "Total = 3730+300+2400+2000 = 8430 W",
+  "8430 W < 12,000 W  →  YES, safe to operate (3570 W margin)",
+  "",
+  "b) Energy for 2 hours:  W = 8.43 kW × 2 h = 16.86 kWh",
+], GREEN, LIGHTGREEN));
+
+children.push(new Paragraph({ children: [new PageBreak()] }));
+
+// ================= SECTION 5: Exam tips =================
+children.push(H1("5. Exam Strategy Tips", NAVY));
+children.push(bullet([boldRun("Power/energy service questions "), normalRun("(house/business supply) repeat almost every paper — memorize: P=VI, 1hp=746W, kWh = kW × hours.")]));
+children.push(bullet([boldRun("Two-source series loops "), normalRun("(like Q2.1 & Quiz1-Q1): combine into ONE net EMF and ONE Rᴛ, solve for I once, then find each node voltage by subtracting IR drops in sequence.")]));
+children.push(bullet([boldRun("Parallel network + power given "), normalRun("(like Q2.2): use E = P/I to find source voltage FIRST, then everything else follows from Ohm's Law + KCL.")]));
+children.push(bullet([boldRun("Always double-check "), normalRun("your final node/branch values by re-deriving one value a second, independent way (as done above) — mismatches reveal sign/direction errors.")]));
+children.push(bullet([boldRun("Units: "), normalRun("keep kΩ/MΩ and µA/mA consistent — convert everything to base units (Ω, A, V) before the final formula, then convert back for the answer.")]));
+
+children.push(spacer(150));
+children.push(calloutBox("Final Tip", [
+  "Practice re-deriving Q2(a) and Quiz1-Q1 from scratch without looking — these 'two source, one loop' problems are the trickiest and most exam-favorite pattern in Chapters 5–6.",
+], RED, LIGHTRED));
+
+// ========================================================================
+const doc = new Document({
+  numbering: { config: [{ reference: "bullets", levels: [
+    { level: 0, format: LevelFormat.BULLET, text: "•", alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 460, hanging: 250 } } } },
+  ] }] },
+  sections: [{
+    properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1000, bottom: 1000, left: 1000, right: 1000 } } },
+    children,
+  }],
+});
+
+Packer.toBuffer(doc).then((buf) => {
+  fs.writeFileSync("/mnt/user-data/outputs/Circuit_Theory_Ch1-6_Quiz_Prep.docx", buf);
+  console.log("done");
+});
